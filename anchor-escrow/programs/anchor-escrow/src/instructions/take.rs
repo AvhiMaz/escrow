@@ -31,24 +31,24 @@ pub struct Take<'info> {
     #[account(
         mut,
         associated_token::mint = mint_b,
-        associated_token::authority = maker,
+        associated_token::authority = taker,
         associated_token::token_program = token_program,
     )]
     pub taker_ata_b: Box<InterfaceAccount<'info, TokenAccount>>, // will sent the amount (to maker)
 
     #[account(
         init_if_needed,
-        payer = maker,
+        payer = taker,
         associated_token::mint = mint_b,
         associated_token::authority = maker,
         associated_token::token_program = token_program,
-
     )]
     pub maker_ata_b: Box<InterfaceAccount<'info, TokenAccount>>, // maker account where maker will
     // receive the token b (required token for maker)
     #[account(
         mut,
         close = maker,
+        has_one = maker,        
         has_one = mint_a,
         has_one =  mint_b,
         seeds = [b"escrow", maker.key().as_ref(), escrow.seed.to_le_bytes().as_ref()],

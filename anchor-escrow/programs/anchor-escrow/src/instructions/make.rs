@@ -69,7 +69,7 @@ impl<'info> Make<'info> {
         let cpi_program = self.token_program.to_account_info();
 
         let cpi_account = TransferChecked {
-            from: self.maker.to_account_info(),
+            from: self.maker_ata_a.to_account_info(),
             to: self.vault.to_account_info(),
             mint: self.mint_a.to_account_info(),
             authority: self.maker.to_account_info(),
