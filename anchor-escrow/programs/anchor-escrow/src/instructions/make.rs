@@ -22,6 +22,7 @@ pub struct Make<'info> {
     pub mint_b: InterfaceAccount<'info, Mint>, // token that maker wants in return
 
     #[account(
+        mut,
         associated_token::mint = mint_a,
         associated_token::authority = maker,
         associated_token::token_program = token_program
@@ -46,7 +47,6 @@ pub struct Make<'info> {
         associated_token::token_program = token_program
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
-
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
