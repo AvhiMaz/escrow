@@ -158,16 +158,6 @@ describe("escrow", () => {
       .then(log);
   });
 
-  it("Refund", async () => {
-    await program.methods
-      .refund()
-      .accounts({ ...accounts })
-      .signers([maker])
-      .rpc()
-      .then(confirm)
-      .then(log);
-  });
-
   it("Take", async () => {
     try {
       await program.methods
@@ -182,4 +172,15 @@ describe("escrow", () => {
       throw e;
     }
   });
-});
+
+  it("Refund", async () => {
+    await program.methods
+      .refund()
+      .accounts({ ...accounts })
+      .signers([maker])
+      .rpc()
+      .then(confirm)
+      .then(log);
+  });
+
+  });

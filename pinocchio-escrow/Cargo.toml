@@ -3,4 +3,23 @@ name = "pinocchio-escrow"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib", "lib"]
+
 [dependencies]
+pinocchio = "0.8.1"
+pinocchio-log = "0.4.0"
+pinocchio-pubkey = "0.2.4"
+pinocchio-system = "0.2.3"
+pinocchio-token = "0.3.0"
+bytemuck = { version = "1.19.0", features = ["derive" , "const_zeroed"] }
+
+[dev-dependencies]
+solana-sdk = "2.1.0"
+mollusk-svm = "0.1.4"
+spl-token = "8.0.0"
+
+
+[features]
+no-entrypoint = []
+std = []
