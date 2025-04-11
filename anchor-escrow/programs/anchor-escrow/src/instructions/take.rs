@@ -65,10 +65,9 @@ pub struct Take<'info> {
 
     )]
     pub vault: InterfaceAccount<'info, TokenAccount>,
-
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 impl<'info> Take<'info> {
@@ -101,8 +100,8 @@ impl<'info> Take<'info> {
 
         let transfer = TransferChecked {
             from: self.vault.to_account_info(),
-            to: self.taker_ata_a.to_account_info(),
             mint: self.mint_a.to_account_info(),
+            to: self.taker_ata_a.to_account_info(),
             authority: self.escrow.to_account_info(),
         };
 
@@ -113,9 +112,9 @@ impl<'info> Take<'info> {
         transfer_checked(cpi_ctx, self.vault.amount, self.mint_a.decimals)?;
 
         let accounts = CloseAccount {
-            authority: self.escrow.to_account_info(),
             account: self.vault.to_account_info(),
             destination: self.taker.to_account_info(),
+            authority: self.escrow.to_account_info(),
         };
 
         let ctx = CpiContext::new_with_signer(

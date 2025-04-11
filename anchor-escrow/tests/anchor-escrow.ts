@@ -158,7 +158,7 @@ describe("escrow", () => {
       .then(log);
   });
 
-  xit("Refund", async () => {
+  it("Refund", async () => {
     await program.methods
       .refund()
       .accounts({ ...accounts })
