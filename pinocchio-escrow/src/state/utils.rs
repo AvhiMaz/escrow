@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use pinocchio::program_error::ProgramError;
 
 use crate::error::MyProgramError;
