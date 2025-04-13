@@ -30,5 +30,7 @@ fn process_instruction(
         EscrowInstructions::Make => {
             instruction::process_make_offer_instruction(program_id, accounts, instruction_data)
         }
+
+        EscrowInstructions::Take => instruction::process_take_instruction(accounts),
     }
 }
