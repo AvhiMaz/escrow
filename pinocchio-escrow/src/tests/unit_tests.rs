@@ -8,9 +8,10 @@ mod tests {
     #![no_std]
     extern crate alloc;
 
-    use mollusk_svm::{program, Mollusk};
+    use mollusk_svm::{program, result::Check, Mollusk};
     use solana_sdk::{
         account::{Account, WritableAccount},
+        instruction::{AccountMeta, Instruction},
         native_token::LAMPORTS_PER_SOL,
         program_option::COption,
         program_pack::Pack,
@@ -47,8 +48,8 @@ mod tests {
         );
         let escrow_account = Account::new(0, 0, &system_program);
 
-        let mint_x = Pubkey::new_from_array([0x03; 32]);
-        let mut mint_x_account = Account::new(
+        let mint_a = Pubkey::new_from_array([0x03; 32]);
+        let mut mint_a_account = Account::new(
             mollusk
                 .sysvars
                 .rent
@@ -64,8 +65,109 @@ mod tests {
                 is_initialized: true,
                 freeze_authority: COption::None,
             },
-            mint_x_account.data_as_mut_slice(),
+            mint_a_account.data_as_mut_slice(),
         )
         .unwrap();
+        let mint_b = Pubkey::new_from_array([0x03; 32]);
+        let mut mint_b_account = Account::new(
+            mollusk
+                .sysvars
+                .rent
+                .minimum_balance(spl_token::state::Mint::LEN),
+            spl_token::state::Mint::LEN,
+            &token_program,
+        );
+        solana_sdk::program_pack::Pack::pack(
+            spl_token::state::Mint {
+                mint_authority: COption::None,
+                supply: 100_000_000,
+                decimals: 6,
+                is_initialized: true,
+                freeze_authority: COption::None,
+            },
+            mint_b_account.data_as_mut_slice(),
+        )
+        .unwrap();
+        let maker_ata = Pubkey::new_from_array([0x05; 32]);
+        let mut maker_ata_account = Account::new(
+            mollusk
+                .sysvars
+                .rent
+                .minimum_balance(spl_token::state::Account::LEN),
+            spl_token::state::Account::LEN,
+            &token_program,
+        );
+        solana_sdk::program_pack::Pack::pack(
+            spl_token::state::Account {
+                mint: mint_a,
+                owner: maker,
+                amount: 100_000_000,
+                delegate: COption::None,
+                state: spl_token::state::AccountState::Initialized,
+                is_native: COption::None,
+                delegated_amount: 0,
+                close_authority: COption::None,
+            },
+            maker_ata_account.data_as_mut_slice(),
+        )
+        .unwrap();
+        let vault = Pubkey::new_from_array([0x06; 32]);
+        let mut vault_account = Account::new(
+            mollusk
+                .sysvars
+                .rent
+                .minimum_balance(spl_token::state::Account::LEN),
+            spl_token::state::Account::LEN,
+            &token_program,
+        );
+        solana_sdk::program_pack::Pack::pack(
+            spl_token::state::Account {
+                mint: mint_a,
+                owner: escrow,
+                amount: 0,
+                delegate: COption::None,
+                state: spl_token::state::AccountState::Initialized,
+                is_native: COption::None,
+                delegated_amount: 0,
+                close_authority: COption::None,
+            },
+            vault_account.data_as_mut_slice(),
+        )
+        .unwrap();
+        let data = [
+            vec![0],
+            vec![escrow_bump],
+            1_000_000u64.to_le_bytes().to_vec(),
+            1_000_000u64.to_le_bytes().to_vec(),
+        ]
+        .concat();
+        let instruction = Instruction::new_with_bytes(
+            ID,
+            &data,
+            vec![
+                AccountMeta::new(maker, true),
+                AccountMeta::new_readonly(mint_a, false),
+                AccountMeta::new_readonly(mint_b, false),
+                AccountMeta::new(maker_ata, false),
+                AccountMeta::new(vault, false),
+                AccountMeta::new(escrow, true),
+                AccountMeta::new_readonly(system_program, false),
+                AccountMeta::new_readonly(token_program, false),
+            ],
+        );
+        mollusk.process_and_validate_instruction(
+            &instruction,
+            &vec![
+                (maker, maker_account),
+                (mint_a, mint_a_account),
+                (mint_b, mint_b_account),
+                (maker_ata, maker_ata_account),
+                (vault, vault_account),
+                (escrow, escrow_account),
+                (system_program, system_account),
+                (token_program, token_account),
+            ],
+            &[Check::success()],
+        );
     }
 }
