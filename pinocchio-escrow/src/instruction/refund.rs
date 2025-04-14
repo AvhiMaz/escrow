@@ -32,6 +32,9 @@ pub fn process_refund_instruction(accounts: &[AccountInfo]) -> ProgramResult {
 
     let seeds = &seed[..];
 
+    //let escrow_pda = find_program_address(seeds, &crate::ID); // [u8; 32, u8]
+    // escrow is [u8; 32] so we can't compare with ([u8; 32], u8)
+
     let (escrow_pda, _bump) = find_program_address(seeds, &crate::ID);
 
     assert_eq!(*escrow.key(), escrow_pda);
