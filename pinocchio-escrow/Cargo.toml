@@ -20,8 +20,9 @@ bytemuck = { version = "1.19.0", features = ["derive" , "const_zeroed"] }
 solana-sdk = "2.1.0"
 mollusk-svm = "0.1.4"
 spl-token = "8.0.0"
-
+mollusk-svm-bencher = "0.1.4"
 
 [features]
 no-entrypoint = []
 std = []
+test-default = ["no-entrypoint", "std"]

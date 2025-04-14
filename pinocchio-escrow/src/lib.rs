@@ -1,6 +1,12 @@
+#[cfg(not(feature = "no-entrypoint"))]
+#[cfg(feature = "std")]
+extern crate std;
+
 mod error;
+
 mod instruction;
 mod state;
+mod tests;
 
 mod entrypoint;
 
