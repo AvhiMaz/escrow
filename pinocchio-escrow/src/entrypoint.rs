@@ -32,5 +32,6 @@ fn process_instruction(
         }
 
         EscrowInstructions::Take => instruction::process_take_instruction(accounts),
+        EscrowInstructions::Refund => instruction::process_refund_instruction(accounts),
     }
 }

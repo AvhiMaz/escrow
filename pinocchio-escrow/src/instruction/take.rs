@@ -66,7 +66,9 @@ pub fn process_take_instruction(accounts: &[AccountInfo]) -> ProgramResult {
     //Converts the array into a slice of &[u8], needed by find_program_address.
     let seeds = &seed[..];
 
-    let _escrow_pda = find_program_address(seeds, &crate::ID);
+    let (escrow_pda, _bump) = find_program_address(seeds, &crate::ID);
+
+    assert_eq!(*escrow.key(), escrow_pda);
 
     // transfer happening from taker to the maker
     pinocchio_token::instructions::Transfer {
